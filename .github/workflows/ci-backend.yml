@@ -1,0 +1,241 @@
+name: CI Backend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run backend Flake8
+        run: |
+          cd backend
+          poetry run flake8
+      - name: Install streamlit dependencies
+        run: |
+          cd streamlit
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run streamlit Flake8
+        run: |
+          cd streamlit
+          poetry run flake8
+      - name: Show Lint Results
+        if: always()
+        run: |
+          echo "Flake8 linting completed for backend and streamlit"
+          if [ $? -eq 0 ]; then
+            echo "Linting passed successfully"
+          else
+            echo "Linting failed with errors"
+          fi
+
+  security:
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run Bandit
+        run: |
+          cd backend
+          poetry run bandit -r app -lll
+      - name: Show Security Scan Results
+        if: always()
+        run: |
+          cd backend
+          echo "Bandit security scan completed"
+          if [ $? -eq 0 ]; then
+            echo "Security scan passed with no critical issues"
+          else
+            echo "Security scan detected potential vulnerabilities"
+          fi
+
+      - name: Run Snyk to check for vulnerabilities in backend
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk_result_backend.sarif backend
+
+      - name: Upload Snyk backend results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk_result_backend.sarif
+          category: synk-backend
+
+      - name: Run Snyk to check for vulnerabilities in streamlit
+        uses: snyk/actions/python@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk_result_streamlit.sarif streamlit
+
+      - name: Upload Snyk streamlit results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk_result_streamlit.sarif
+          category: synk-streamlit
+
+  test:
+    runs-on: ubuntu-latest
+    needs: security
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run backend tests with coverage
+        run: |
+          cd backend
+          PYTHONPATH=. poetry run pytest --cov=app --cov-report=xml:coverage.xml tests/
+      - name: Show Backend Test Results
+        if: always()
+        run: |
+          cd backend
+          echo "Backend test execution completed"
+          if [ -f coverage.xml ]; then
+            echo "Coverage report generated successfully"
+            coverage_percentage=$(grep -o 'line-rate="[0-9.]*"' coverage.xml | head -1 | cut -d'"' -f2)
+            if [ ! -z "$coverage_percentage" ]; then
+              echo "Backend coverage: $(echo "$coverage_percentage * 100" | bc)%"
+            fi
+          else
+            echo "Coverage report generation failed"
+          fi
+      - name: Install streamlit dependencies
+        run: |
+          cd streamlit
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run streamlit tests with coverage
+        run: |
+          cd streamlit
+          PYTHONPATH=. poetry run pytest --cov=src --cov-report=xml:coverage.xml tests/
+      - name: Show Streamlit Test Results
+        if: always()
+        run: |
+          cd streamlit
+          echo "Streamlit test execution completed"
+          if [ -f coverage.xml ]; then
+            echo "Coverage report generated successfully"
+            coverage_percentage=$(grep -o 'line-rate="[0-9.]*"' coverage.xml | head -1 | cut -d'"' -f2)
+            if [ ! -z "$coverage_percentage" ]; then
+              echo "Streamlit coverage: $(echo "$coverage_percentage * 100" | bc)%"
+            fi
+          else
+            echo "Coverage report generation failed"
+          fi
+      - name: Combine coverage reports
+        run: |
+          mkdir -p coverage
+          cp backend/coverage.xml coverage/backend-coverage.xml
+          cp streamlit/coverage.xml coverage/streamlit-coverage.xml
+          echo "Combined coverage reports from both projects"
+      - name: Upload combined coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/
+          overwrite: true
+
+  sonar:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for proper SCM analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-reports
+          path: ./coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.organization=haidarjbeily7
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.python.coverage.reportPaths=./coverage/backend-coverage.xml,./coverage/streamlit-coverage.xml
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.exclusions=**/tests/**,**/__pycache__/**
+            -Dsonar.qualitygate.wait=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            
+      - name: SonarQube Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Show SonarQube Results
+        if: always()
+        run: |
+          echo "SonarQube scan completed"
+          if [ -f ".scannerwork/report-task.txt" ]; then
+            echo "SonarQube analysis completed successfully"
+            # Extract dashboard URL from the report
+            DASHBOARD_URL=$(grep "dashboardUrl=" .scannerwork/report-task.txt | cut -d'=' -f2-)
+            # Extract project key for the URL
+            PROJECT_KEY="${{ secrets.SONAR_PROJECT_KEY }}"
+            echo "SonarQube Results: $DASHBOARD_URL"
+            echo "::notice title=SonarQube Results::View detailed analysis at: https://sonarcloud.io/dashboard?id=$PROJECT_KEY&branch=main"
+          else
+            echo "SonarQube analysis may have encountered issues"
+          fi
