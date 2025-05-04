@@ -126,6 +126,12 @@ jobs:
       - name: Run backend tests with coverage
         run: |
           cd backend
+          touch .env
+          echo "TESTING=true" >> .env
+          echo "DATABASE_URL=sqlite:///./test.db" >> .env
+          echo "NEWS_API_KEY=test" >> .env
+          echo "SECRET_KEY=test" >> .env
+          echo "FIREBASE_CREDENTIALS_PATH=test.json" >> .env
           PYTHONPATH=. poetry run pytest --cov=app --cov-report=xml:coverage.xml tests/
       - name: Show Backend Test Results
         if: always()
