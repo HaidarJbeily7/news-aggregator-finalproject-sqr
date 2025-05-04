@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     TESTING: bool
 
     model_config = SettingsConfigDict(
-        env_file=".test.env",
+        env_file=".env",
         case_sensitive=True,
     )
 
