@@ -1,8 +1,10 @@
 """Main application module for the news aggregator API."""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.api.v1.api import api_router
 from app.core.middleware import RateLimitMiddleware, CacheMiddleware
 from app.core.rate_limiter import RateLimiter
 from app.core.cache import Cache
@@ -44,6 +46,9 @@ def create_application() -> FastAPI:
         ttl=settings.CACHE_TTL,
     )
     app.add_middleware(CacheMiddleware, cache=cache)
+
+    # Include API router
+    app.include_router(api_router, prefix="")
 
     return app
 
