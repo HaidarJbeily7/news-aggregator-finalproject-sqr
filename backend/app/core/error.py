@@ -12,8 +12,7 @@ def handle_auth_error(error: Exception) -> None:
 
     error_message = error_messages.get(
         type(error),
-        f"Authentication error: {
-            str(error)}")
+        f"Authentication error: {str(error)}")
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=error_message,
