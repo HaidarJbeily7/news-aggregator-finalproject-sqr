@@ -16,9 +16,8 @@ class MockForm(MockContainer):
     pass
 
 
-@pytest.fixture(autouse=True)
-def mock_streamlit(monkeypatch):
-    """Mock Streamlit functions for testing."""
+def _mock_basic_functions(monkeypatch):
+    """Mock basic Streamlit functions."""
     def mock_title(text):
         return text
 
@@ -34,35 +33,51 @@ def mock_streamlit(monkeypatch):
     def mock_spinner(text):
         return MockContainer()
 
-    def mock_form(key):
-        return MockForm()
-
-    def mock_text_input(label, key=None, placeholder=None):
-        return ""
-
-    def mock_selectbox(label, options, format_func=None, key=None):
-        return options[0]
-
-    def mock_form_submit_button(label):
-        return True
-
-    def mock_columns(ratio):
-        return [MockContainer(), MockContainer()]
-
-    def mock_container():
-        return MockContainer()
-
     monkeypatch.setattr(st, "title", mock_title)
     monkeypatch.setattr(st, "success", mock_success)
     monkeypatch.setattr(st, "error", mock_error)
     monkeypatch.setattr(st, "info", mock_info)
     monkeypatch.setattr(st, "spinner", mock_spinner)
+
+
+def _mock_form_functions(monkeypatch):
+    """Mock form-related Streamlit functions."""
+    def mock_form(key):
+        return MockForm()
+
+    def mock_text_input(label, key=None, placeholder=None):
+        return f"input_{label}"
+
+    def mock_selectbox(label, options, format_func=None, key=None):
+        return options[0] if options else None
+
+    def mock_form_submit_button(label):
+        return True
+
     monkeypatch.setattr(st, "form", mock_form)
     monkeypatch.setattr(st, "text_input", mock_text_input)
     monkeypatch.setattr(st, "selectbox", mock_selectbox)
     monkeypatch.setattr(st, "form_submit_button", mock_form_submit_button)
+
+
+def _mock_layout_functions(monkeypatch):
+    """Mock layout-related Streamlit functions."""
+    def mock_columns(ratio):
+        return [MockContainer() for _ in ratio]
+
+    def mock_container():
+        return MockContainer()
+
     monkeypatch.setattr(st, "columns", mock_columns)
     monkeypatch.setattr(st, "container", mock_container)
+
+
+@pytest.fixture(autouse=True)
+def mock_streamlit(monkeypatch):
+    """Mock Streamlit functions for testing."""
+    _mock_basic_functions(monkeypatch)
+    _mock_form_functions(monkeypatch)
+    _mock_layout_functions(monkeypatch)
 
 
 @pytest.fixture

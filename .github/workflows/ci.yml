@@ -24,7 +24,7 @@ jobs:
       - name: Run backend Flake8
         run: |
           cd backend
-          poetry run flake8
+          poetry run flake8 --max-complexity 10 --statistics
       - name: Install streamlit dependencies
         run: |
           cd streamlit
@@ -34,7 +34,7 @@ jobs:
       - name: Run streamlit Flake8
         run: |
           cd streamlit
-          poetry run flake8
+          poetry run flake8 --max-complexity 10 --statistics
       - name: Show Lint Results
         if: always()
         run: |
@@ -156,7 +156,7 @@ jobs:
       - name: Run streamlit tests with coverage
         run: |
           cd streamlit
-          pytest --cov=src --cov-report=xml:coverage.xml tests/
+          PYTHONPATH=. poetry run pytest --cov=src --cov-report=xml:coverage.xml tests/
       - name: Show Streamlit Test Results
         if: always()
         run: |

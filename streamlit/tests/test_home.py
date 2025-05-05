@@ -20,9 +20,8 @@ class MockSpinner(MockContainer):
     pass
 
 
-@pytest.fixture(autouse=True)
-def mock_streamlit(monkeypatch):
-    """Mock Streamlit functions for testing."""
+def _mock_basic_functions(monkeypatch):
+    """Mock basic Streamlit functions."""
     def mock_title(text):
         return text
 
@@ -38,39 +37,57 @@ def mock_streamlit(monkeypatch):
     def mock_info(text):
         return text
 
-    def mock_spinner(text):
-        return MockSpinner()
-
-    def mock_button(text, on_click=None, use_container_width=False):
-        return None
-
-    def mock_rerun():
-        return None
-
-    def mock_text_input(label, key=None, type=None):
-        return "test@example.com"
-
-    def mock_tabs(tab_names):
-        return [MockTab(), MockTab()]
-
     def mock_subheader(text):
         return text
-
-    def mock_columns(ratio):
-        return [MockContainer(), MockContainer()]
 
     monkeypatch.setattr(st, "title", mock_title)
     monkeypatch.setattr(st, "write", mock_write)
     monkeypatch.setattr(st, "success", mock_success)
     monkeypatch.setattr(st, "error", mock_error)
     monkeypatch.setattr(st, "info", mock_info)
-    monkeypatch.setattr(st, "spinner", mock_spinner)
+    monkeypatch.setattr(st, "subheader", mock_subheader)
+
+
+def _mock_interactive_functions(monkeypatch):
+    """Mock interactive Streamlit functions."""
+    def mock_button(text, on_click=None, use_container_width=False):
+        if on_click:
+            on_click()
+        return text
+
+    def mock_text_input(label, key=None, type=None):
+        return f"input_{label}"
+
+    def mock_tabs(tab_names):
+        return [MockTab() for _ in tab_names]
+
+    def mock_columns(ratio):
+        return [MockContainer() for _ in ratio]
+
     monkeypatch.setattr(st, "button", mock_button)
-    monkeypatch.setattr(st, "rerun", mock_rerun)
     monkeypatch.setattr(st, "text_input", mock_text_input)
     monkeypatch.setattr(st, "tabs", mock_tabs)
-    monkeypatch.setattr(st, "subheader", mock_subheader)
     monkeypatch.setattr(st, "columns", mock_columns)
+
+
+def _mock_utility_functions(monkeypatch):
+    """Mock utility Streamlit functions."""
+    def mock_spinner(text):
+        return MockSpinner()
+
+    def mock_rerun():
+        pass
+
+    monkeypatch.setattr(st, "spinner", mock_spinner)
+    monkeypatch.setattr(st, "rerun", mock_rerun)
+
+
+@pytest.fixture(autouse=True)
+def mock_streamlit(monkeypatch):
+    """Mock Streamlit functions for testing."""
+    _mock_basic_functions(monkeypatch)
+    _mock_interactive_functions(monkeypatch)
+    _mock_utility_functions(monkeypatch)
 
 
 @pytest.fixture

@@ -5,15 +5,15 @@ import asyncio
 from typing import Dict, Any
 
 # Import components and utilities
-from utils.firebase import firebase_login_ui, firebase_logout
-from utils.auth import (
+from src.utils.firebase import firebase_login_ui, firebase_logout
+from src.utils.auth import (
     init_auth_state,
     is_authenticated,
     fetch_user_info,
 )
-from utils.api import get_headlines
-from components.article_card import article_card
-from utils.config import API_BASE_URL
+from src.utils.api import get_headlines
+from src.components.article_card import article_card
+from src.utils.config import API_BASE_URL
 # Configure page settings
 st.set_page_config(
     page_title="News Aggregator",

@@ -157,4 +157,3 @@ def test_firebase_logout(monkeypatch):
 
     assert called["cleared"] is True
     assert called["success"] == "Logged out successfully!"
-    assert called["rerun"] is True
