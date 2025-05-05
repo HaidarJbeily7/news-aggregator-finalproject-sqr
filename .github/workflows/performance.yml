@@ -25,7 +25,7 @@ jobs:
           docker-compose -f docker-compose.performance.yaml down
 
       - name: Upload performance results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-results
           path: |
