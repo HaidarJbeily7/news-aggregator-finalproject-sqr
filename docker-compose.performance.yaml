@@ -1,0 +1,6 @@
+services:
+  k6:
+    image: grafana/k6
+    volumes:
+      - ./test_performance:/scripts
+    command: run /scripts/k6.js

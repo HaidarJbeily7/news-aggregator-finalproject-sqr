@@ -18,8 +18,8 @@ def test_settings_default_values():
     assert settings.ALGORITHM == "HS256"
     assert settings.ACCESS_TOKEN_EXPIRE_MINUTES == 30
     assert settings.BACKEND_CORS_ORIGINS == ["*"]
-    assert settings.RATE_LIMIT_MAX_REQUESTS == 100
-    assert settings.RATE_LIMIT_TIME_WINDOW == 60
+    assert settings.RATE_LIMIT_MAX_REQUESTS == 1000
+    assert settings.RATE_LIMIT_TIME_WINDOW == 10
     assert settings.CACHE_MAX_SIZE == 1000
     assert settings.CACHE_TTL == 300
 

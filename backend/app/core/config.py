@@ -35,8 +35,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     # Rate limiting settings
-    RATE_LIMIT_MAX_REQUESTS: int = 100
-    RATE_LIMIT_TIME_WINDOW: int = 60
+    RATE_LIMIT_MAX_REQUESTS: int = 1000
+    RATE_LIMIT_TIME_WINDOW: int = 10
 
     # Cache settings
     CACHE_MAX_SIZE: int = 1000

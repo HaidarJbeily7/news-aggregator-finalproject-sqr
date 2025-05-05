@@ -13,7 +13,7 @@ A modern news aggregator application that fetches and personalizes news content 
 
 ## Tech Stack
 
-- Python 3.10+
+- Python 3.12+
 - FastAPI
 - SQLite
 - Firebase Authentication
@@ -22,23 +22,6 @@ A modern news aggregator application that fetches and personalizes news content 
 - Pytest (Testing)
 - Flake8 (Linting)
 - Bandit (Security)
-
-## Project Structure
-
-```
-news-aggregator/
-├── app/
-│   ├── api/           # API routes and endpoints
-│   ├── core/          # Core functionality and configuration
-│   ├── db/            # Database models and operations
-│   ├── models/        # Pydantic models
-│   ├── services/      # Business logic and external services
-│   └── utils/         # Utility functions
-├── tests/             # Test files
-├── .env.example       # Environment variables template
-├── pyproject.toml     # Project dependencies
-└── README.md          # Project documentation
-```
 
 ## Setup
 
@@ -59,7 +42,6 @@ PYTHONPATH=. poetry run pytest tests/
 ## Code Quality
 
 - Linting: `poetry run flake8`
-- Type checking: `poetry run mypy .`
 - Security check: `poetry run bandit -r app`
 
 ## API Documentation
