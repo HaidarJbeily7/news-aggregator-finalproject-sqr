@@ -10,7 +10,7 @@ package-mode = false
 python = ">=3.12"
 streamlit = "1.43.2"
 httpx = "0.26.0"
-firebase-admin = "6.4.0"
+firebase-admin = "6.8.0"
 python-dotenv = "1.0.0"
 # Pin to an earlier version of pydantic that doesn't have issues with pydantic-core 2.16.1
 # pydantic = "2.5.2"
