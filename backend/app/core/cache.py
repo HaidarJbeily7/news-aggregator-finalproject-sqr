@@ -18,7 +18,7 @@ class Cache:
             max_size: Maximum number of items in the cache.
             ttl: Time to live in seconds.
         """
-        self.cache = TTLCache(
+        self.cache_storage = TTLCache(
             maxsize=max_size,
             ttl=ttl,
         )
@@ -32,7 +32,7 @@ class Cache:
         Returns:
             Optional[bytes]: Cached value if found, None otherwise.
         """
-        return self.cache.get(key)
+        return self.cache_storage.get(key)
 
     async def set(self, key: str, value: bytes) -> None:
         """Set a value in the cache.
@@ -41,4 +41,4 @@ class Cache:
             key: Cache key.
             value: Value to cache.
         """
-        self.cache[key] = value
+        self.cache_storage[key] = value

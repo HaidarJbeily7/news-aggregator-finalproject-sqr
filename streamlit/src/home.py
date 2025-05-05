@@ -26,6 +26,11 @@ st.set_page_config(
 init_auth_state()
 
 
+class AuthenticationError(Exception):
+    """Custom exception for authentication failures."""
+    pass
+
+
 async def handle_user_auth(firebase_user: Dict[str, Any]) -> str:
     """Handle user authentication with the backend API.
 
@@ -67,9 +72,10 @@ async def handle_user_auth(firebase_user: Dict[str, Any]) -> str:
                 return firebase_user["idToken"]
             else:
                 error_msg = "Failed to authenticate user: " + response.text
-                raise Exception(error_msg)
+                raise AuthenticationError(error_msg)
         except httpx.RequestError as e:
-            raise Exception(f"Failed to connect to backend: {str(e)}")
+            raise AuthenticationError(
+                f"Failed to connect to backend: {str(e)}")
 
 
 async def load_headlines():
@@ -106,7 +112,7 @@ def main():
                     asyncio.run(fetch_user_info(token))
                     st.success("Logged in successfully!")
                     st.rerun()
-                except Exception as e:
+                except AuthenticationError as e:
                     st.error(f"Login failed: {str(e)}")
                     st.info(
                         "Please try again or contact support "

@@ -5,6 +5,11 @@ from app.core.config import settings
 from app.models.schemas import NewsArticle, NewsSearchParams
 
 
+class NewsServiceError(Exception):
+    """Exception raised for errors in the NewsService."""
+    pass
+
+
 def create_news_api_client(api_key: str) -> NewsApiClient:
     """Create a NewsApiClient instance."""
     return NewsApiClient(api_key=api_key)
@@ -46,7 +51,7 @@ class NewsService:
             )
             return convert_api_response_to_articles(response)
         except Exception as e:
-            raise Exception(f"Error fetching news: {str(e)}")
+            raise NewsServiceError(f"Error fetching news: {str(e)}")
 
     async def get_top_headlines(
         self,
@@ -63,7 +68,7 @@ class NewsService:
             )
             return convert_api_response_to_articles(response)
         except Exception as e:
-            raise Exception(f"Error fetching news: {str(e)}")
+            raise NewsServiceError(f"Error fetching news: {str(e)}")
 
     async def __aenter__(self) -> "NewsService":
         """Enter async context."""

@@ -5,6 +5,16 @@ import httpx
 from .config import API_BASE_URL
 
 
+class ApiError(Exception):
+    """Base exception for API-related errors."""
+    pass
+
+
+class AuthenticationError(ApiError):
+    """Exception raised when authentication is required or fails."""
+    pass
+
+
 def init_auth_state():
     """Initialize authentication state in session state."""
     if "auth_state" not in st.session_state:
@@ -99,7 +109,7 @@ async def fetch_user_info(token: str) -> Dict[str, Any]:
             response.raise_for_status()
             return response.json()
         except httpx.RequestError as e:
-            raise Exception(f"Failed to fetch user info: {str(e)}")
+            raise AuthenticationError(f"Failed to fetch user info: {str(e)}")
 
 
 def require_auth():
