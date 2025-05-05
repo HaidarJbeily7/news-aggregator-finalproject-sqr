@@ -14,7 +14,7 @@ export let options = {
   rps: 2,  // Limit requests per second
 }
 
-const BASE_URL = 'http://app:8000'
+const BASE_URL = 'https://backend-floral-field-9372.fly.dev'
 
 // Add a random delay between requests
 function randomDelay() {
