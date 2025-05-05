@@ -19,10 +19,10 @@ jobs:
 
       - name: Run performance tests
         run: |
-          docker-compose -f docker-compose.performance.yaml up --build -d
+          docker compose -f docker-compose.performance.yaml up --build -d
           sleep 10  # Wait for the app to be ready
-          docker-compose -f docker-compose.performance.yaml run k6 > performance-results.txt
-          docker-compose -f docker-compose.performance.yaml down
+          docker compose -f docker-compose.performance.yaml run k6 > performance-results.txt
+          docker compose -f docker-compose.performance.yaml down
 
       - name: Upload performance results
         uses: actions/upload-artifact@v4
