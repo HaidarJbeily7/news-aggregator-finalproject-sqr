@@ -35,26 +35,3 @@ jobs:
           path: |
             performance-results.txt
             test_performance/performance-report.html
-
-      - name: Comment on PR with results
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const results = fs.readFileSync('performance-results.txt', 'utf8');
-            
-            // Extract the threshold and results section
-            const thresholdSection = results.match(/█ THRESHOLDS[\s\S]*?█ TOTAL RESULTS[\s\S]*?running/);
-            const thresholdResults = thresholdSection ? thresholdSection[0] : 'No threshold results found';
-            
-            const issueNumber = context.issue.number;
-            const comment = `### Performance Test Results\n\`\`\`\n${thresholdResults}\n\`\`\`\n\n[View detailed HTML report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
-            
-            await github.rest.issues.createComment({
-              issue_number: issueNumber,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
