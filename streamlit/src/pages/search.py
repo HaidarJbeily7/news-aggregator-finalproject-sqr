@@ -78,7 +78,9 @@ async def search_and_display():
                 article_card(
                     bookmark_id=index,
                     article=article,
-                    on_bookmark=lambda a=article: asyncio.run(bookmark_article(a))
+                    on_bookmark=lambda a=article: asyncio.run(
+                        bookmark_article(a)
+                    )
                 )
 
         except Exception as e:

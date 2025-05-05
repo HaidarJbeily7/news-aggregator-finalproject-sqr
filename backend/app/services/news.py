@@ -3,7 +3,7 @@ from typing import List
 from newsapi import NewsApiClient
 from app.core.config import settings
 from app.models.schemas import NewsArticle, NewsSearchParams
-import json
+
 
 class NewsServiceError(Exception):
     """Exception raised for errors in the NewsService."""
