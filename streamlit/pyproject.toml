@@ -8,7 +8,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.12"
-streamlit = "1.28.0"
+streamlit = "1.43.2"
 httpx = "0.26.0"
 firebase-admin = "6.4.0"
 python-dotenv = "1.0.0"
