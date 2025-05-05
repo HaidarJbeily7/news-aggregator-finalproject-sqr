@@ -115,7 +115,7 @@ def _handle_bookmark_actions(
         is_bookmarked: Whether the article is bookmarked.
         bookmark_id: ID of the bookmark, if bookmarked.
     """
-    col1, col2 = st.columns([3, 1])
+    _, col2 = st.columns([3, 1])
 
     with col2:
         if on_bookmark and not is_bookmarked and st.button(
