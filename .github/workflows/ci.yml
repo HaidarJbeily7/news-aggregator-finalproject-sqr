@@ -79,6 +79,12 @@ jobs:
           else
             echo "Security scan detected potential vulnerabilities"
           fi
+      - name: Install streamlit dependencies
+        run: |
+          cd streamlit
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
       - name: Run Streamlit Bandit
         run: |
           cd streamlit
