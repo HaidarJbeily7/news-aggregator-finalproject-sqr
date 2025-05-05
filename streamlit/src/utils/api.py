@@ -173,7 +173,7 @@ async def create_bookmark(bookmark_data: Dict[str, Any]) -> Dict[str, Any]:
 
         if response.status_code == 201:
             return response.json()
-        raise Exception(f"Failed to create bookmark: {response.text}")
+        raise BookmarkApiError(f"Failed to create bookmark: {response.text}")
 
 
 async def delete_bookmark(bookmark_id: int) -> None:
@@ -197,4 +197,4 @@ async def delete_bookmark(bookmark_id: int) -> None:
         )
 
         if response.status_code != 204:
-            raise Exception(f"Failed to delete bookmark: {response.text}")
+            raise BookmarkApiError(f"Failed to delete bookmark: {response.text}")
