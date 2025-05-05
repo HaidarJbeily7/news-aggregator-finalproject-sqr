@@ -68,4 +68,6 @@ async def root() -> dict[str, str]:
 
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    # Use 127.0.0.1 instead of 0.0.0.0 to avoid binding to all interfaces
+    # This addresses security issue B104: hardcoded_bind_all_interfaces
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)

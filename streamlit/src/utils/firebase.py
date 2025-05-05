@@ -54,7 +54,8 @@ def handle_login(login_email, login_password):
             "email": login_email,
             "password": login_password,
             "returnSecureToken": True
-        }
+        },
+        timeout=10
     )
     if response.status_code == 200:
         user_data = response.json()
@@ -86,7 +87,8 @@ def handle_signup(signup_name, signup_email, signup_password):
         json={
             "email": signup_email,
             "password": signup_password,
-            "returnSecureToken": True})
+            "returnSecureToken": True},
+        timeout=10)
 
     if response.status_code == 200:
         user_data = response.json()
@@ -97,7 +99,8 @@ def handle_signup(signup_name, signup_email, signup_password):
             json={
                 "idToken": user_data["idToken"],
                 "displayName": signup_name,
-                "returnSecureToken": True})
+                "returnSecureToken": True},
+            timeout=10)
 
         if profile_response.status_code == 200:
             updated_data = profile_response.json()

@@ -41,9 +41,9 @@ jobs:
         run: |
           echo "Flake8 linting completed for backend and streamlit"
           if [ $? -eq 0 ]; then
-            echo "Linting passed successfully"
+            echo "Linting passed successfully for backend and streamlit and Cyclomatic Complexity (max 10)"
           else
-            echo "Linting failed with errors"
+            echo "Linting failed with errors for backend and streamlit and Cyclomatic Complexity (max 10)"
           fi
 
   security:
@@ -65,7 +65,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
-      - name: Run Bandit
+      - name: Run Backend Bandit
         run: |
           cd backend
           poetry run bandit -r app -lll
@@ -74,6 +74,20 @@ jobs:
         run: |
           cd backend
           echo "Bandit security scan completed"
+          if [ $? -eq 0 ]; then
+            echo "Security scan passed with no critical issues"
+          else
+            echo "Security scan detected potential vulnerabilities"
+          fi
+      - name: Run Streamlit Bandit
+        run: |
+          cd streamlit
+          poetry run bandit -r src -lll
+      - name: Show Streamlit Security Scan Results
+        if: always()
+        run: |
+          cd streamlit
+          echo "Bandit security scan completed for Streamlit"
           if [ $? -eq 0 ]; then
             echo "Security scan passed with no critical issues"
           else
