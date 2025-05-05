@@ -8,6 +8,7 @@ on:
 
 jobs:
   lint:
+    name: "Flake8: Lint && Cyclomatic Complexity (max 10)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -46,6 +47,7 @@ jobs:
           fi
 
   security:
+    name: "Security: Bandit & Snyk"
     runs-on: ubuntu-latest
     needs: lint
     permissions:
@@ -107,6 +109,7 @@ jobs:
           category: synk-streamlit
 
   test:
+    name: "Tests: Backend & Streamlit"
     runs-on: ubuntu-latest
     needs: security
     steps:
