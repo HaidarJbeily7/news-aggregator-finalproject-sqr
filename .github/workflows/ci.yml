@@ -80,7 +80,6 @@ jobs:
 
       - name: Run Snyk to check for vulnerabilities in backend
         uses: snyk/actions/python@master
-        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -94,7 +93,6 @@ jobs:
 
       - name: Run Snyk to check for vulnerabilities in streamlit
         uses: snyk/actions/python@master
-        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
