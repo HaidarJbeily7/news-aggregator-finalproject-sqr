@@ -68,7 +68,7 @@ def firebase_login_ui() -> Optional[Dict[str, Any]]:
         login_email = st.text_input("Email", key="login_email")
         login_password = st.text_input(
             "Password", type="password", key="login_password")
-        login_col1, login_col2 = st.columns([1, 3])
+        login_col1, _ = st.columns([1, 3])
         with login_col1:
             login_button = st.button("Login", use_container_width=True)
         if login_button and login_email and login_password:
@@ -116,7 +116,7 @@ def firebase_login_ui() -> Optional[Dict[str, Any]]:
             type="password",
             key="signup_confirm")
 
-        signup_col1, signup_col2 = st.columns([1, 3])
+        signup_col1, _ = st.columns([1, 3])
         with signup_col1:
             signup_button = st.button("Sign Up", use_container_width=True)
 

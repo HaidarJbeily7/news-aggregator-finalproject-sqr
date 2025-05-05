@@ -68,18 +68,21 @@ def article_card(
                     use_column_width=True
                 )
 
-            if on_bookmark and not is_bookmarked:
-                if st.button(
-                    "Bookmark",
-                    key=f"bookmark_{article.get('id', hash(article['title']))}"
-                ):
-                    on_bookmark(article)
+            if on_bookmark and not is_bookmarked and st.button(
+                "Bookmark",
+                key=f"bookmark_{article.get('id', hash(article['title']))}"
+            ):
+                on_bookmark(article)
 
-            if on_remove_bookmark and is_bookmarked and bookmark_id:
-                if st.button(
+            if (
+                on_remove_bookmark
+                and is_bookmarked
+                and bookmark_id
+                and st.button(
                     "Remove Bookmark",
-                    key=f"remove_bookmark_{bookmark_id}"
-                ):
-                    on_remove_bookmark(bookmark_id)
+                    key=f"remove_bookmark_{bookmark_id}",
+                )
+            ):
+                on_remove_bookmark(bookmark_id)
 
         st.divider()

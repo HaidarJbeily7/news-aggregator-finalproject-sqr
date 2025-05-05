@@ -5,6 +5,28 @@ from typing import Dict, List, Any, Optional
 from .config import API_BASE_URL
 from .auth import get_auth_token
 
+AUTH_ERROR = "Authentication required"
+
+
+class ApiError(Exception):
+    """Base exception for API-related errors."""
+    pass
+
+
+class AuthenticationError(ApiError):
+    """Exception raised when authentication is required or fails."""
+    pass
+
+
+class NewsApiError(ApiError):
+    """Exception raised when news API requests fail."""
+    pass
+
+
+class BookmarkApiError(ApiError):
+    """Exception raised when bookmark API requests fail."""
+    pass
+
 
 async def get_headlines(
     category: Optional[str] = None,
@@ -26,7 +48,7 @@ async def get_headlines(
     """
     token = get_auth_token()
     if not token:
-        raise Exception("Authentication required")
+        raise AuthenticationError(AUTH_ERROR)
 
     params = {
         "country": country,
@@ -46,7 +68,7 @@ async def get_headlines(
 
         if response.status_code == 200:
             return response.json()
-        raise Exception(f"Failed to fetch headlines: {response.text}")
+        raise NewsApiError(f"Failed to fetch headlines: {response.text}")
 
 
 async def search_news(
@@ -73,7 +95,7 @@ async def search_news(
     """
     token = get_auth_token()
     if not token:
-        raise Exception("Authentication required")
+        raise AuthenticationError(AUTH_ERROR)
 
     params = {
         "language": language,
@@ -97,7 +119,7 @@ async def search_news(
 
         if response.status_code == 200:
             return response.json()
-        raise Exception(f"Failed to search news: {response.text}")
+        raise NewsApiError(f"Failed to search news: {response.text}")
 
 
 async def get_bookmarks() -> List[Dict[str, Any]]:
@@ -111,7 +133,7 @@ async def get_bookmarks() -> List[Dict[str, Any]]:
     """
     token = get_auth_token()
     if not token:
-        raise Exception("Authentication required")
+        raise AuthenticationError(AUTH_ERROR)
 
     headers = {"Authorization": f"Bearer {token}"}
     async with httpx.AsyncClient() as client:
@@ -122,7 +144,7 @@ async def get_bookmarks() -> List[Dict[str, Any]]:
 
         if response.status_code == 200:
             return response.json()
-        raise Exception(f"Failed to fetch bookmarks: {response.text}")
+        raise BookmarkApiError(f"Failed to fetch bookmarks: {response.text}")
 
 
 async def create_bookmark(bookmark_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -139,7 +161,7 @@ async def create_bookmark(bookmark_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     token = get_auth_token()
     if not token:
-        raise Exception("Authentication required")
+        raise AuthenticationError(AUTH_ERROR)
 
     headers = {"Authorization": f"Bearer {token}"}
     async with httpx.AsyncClient() as client:
@@ -165,7 +187,7 @@ async def delete_bookmark(bookmark_id: int) -> None:
     """
     token = get_auth_token()
     if not token:
-        raise Exception("Authentication required")
+        raise AuthenticationError(AUTH_ERROR)
 
     headers = {"Authorization": f"Bearer {token}"}
     async with httpx.AsyncClient() as client:
