@@ -5,15 +5,15 @@ import asyncio
 from typing import Dict, Any
 
 # Import components and utilities
-from .utils.firebase import firebase_login_ui, firebase_logout
-from .utils.auth import (
+from utils.firebase import firebase_login_ui, firebase_logout
+from utils.auth import (
     init_auth_state,
     is_authenticated,
     fetch_user_info,
 )
-from .utils.api import get_headlines
-from .components.article_card import article_card
-
+from utils.api import get_headlines
+from components.article_card import article_card
+from utils.config import API_BASE_URL
 # Configure page settings
 st.set_page_config(
     page_title="News Aggregator",
@@ -54,21 +54,17 @@ async def handle_user_auth(firebase_user: Dict[str, Any]) -> str:
         try:
             # First try to login
             response = await client.get(
-                "http://localhost:8000/api/v1/me",
+                f"{API_BASE_URL}/api/v1/me",
                 headers={"Authorization": f"Bearer {firebase_user['idToken']}"}
             )
             if response.status_code == 200:
-                data = response.json()
-                print(data, "data here")
                 return firebase_user["idToken"]
             # If login fails, try to register
             response = await client.post(
-                "http://localhost:8000/api/v1/register",
+                f"{API_BASE_URL}/api/v1/register",
                 json=user_data
             )
             if response.status_code in (201, 200):
-                data = response.json()
-                print(data, "data here")
                 return firebase_user["idToken"]
             else:
                 error_msg = "Failed to authenticate user: " + response.text

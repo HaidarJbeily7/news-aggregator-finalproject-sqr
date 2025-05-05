@@ -3,7 +3,7 @@ from typing import List
 from newsapi import NewsApiClient
 from app.core.config import settings
 from app.models.schemas import NewsArticle, NewsSearchParams
-
+import json
 
 class NewsServiceError(Exception):
     """Exception raised for errors in the NewsService."""
@@ -17,10 +17,16 @@ def create_news_api_client(api_key: str) -> NewsApiClient:
 
 def convert_api_response_to_articles(response: dict) -> List[NewsArticle]:
     """Convert NewsAPI response to list of NewsArticle models."""
-    return [
-        NewsArticle(**article)
-        for article in response["articles"]
-    ]
+    articles = []
+    for article in response["articles"]:
+        # Create a copy of the article dict and modify the source field
+        article_data = article.copy()
+        if isinstance(article["source"], dict):
+            article_data["source"] = article["source"].get("name", "Unknown")
+        else:
+            article_data["source"] = str(article["source"])
+        articles.append(NewsArticle(**article_data))
+    return articles
 
 
 class NewsService:
@@ -39,10 +45,6 @@ class NewsService:
         try:
             # Build query string to include category if provided
             q = params.query or ""
-            if params.category:
-                category_str = f"category:{params.category}"
-                q = f"{q} {category_str}" if q else category_str
-
             response = self.client.get_everything(
                 q=q.strip() or None,  # Use None if empty string
                 language=params.language,

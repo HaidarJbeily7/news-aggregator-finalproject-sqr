@@ -70,7 +70,7 @@ def article_card(
 
             if on_bookmark and not is_bookmarked and st.button(
                 "Bookmark",
-                key=f"bookmark_{article.get('id', hash(article['title']))}"
+                key=f"bookmark_{hash(article['title'])}"
             ):
                 on_bookmark(article)
 

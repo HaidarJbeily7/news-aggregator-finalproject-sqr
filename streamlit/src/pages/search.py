@@ -1,6 +1,7 @@
 """Search page for finding news articles."""
 import streamlit as st
 import asyncio
+import nest_asyncio
 
 from src.utils.auth import require_auth
 from src.utils.api import search_news, create_bookmark
@@ -15,6 +16,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Enable nested event loops
+nest_asyncio.apply()
+
 # Require authentication
 require_auth()
 
@@ -27,7 +31,7 @@ async def bookmark_article(article):
     """
     try:
         bookmark_data = {
-            "article_id": article.get("id", ""),
+            "article_id": str(hash(article["title"])),
             "title": article["title"],
             "description": article.get("description"),
             "url": article["url"],
@@ -70,12 +74,11 @@ async def search_and_display():
             st.success(f"Found {len(articles)} articles")
 
             # Display articles
-            for article in articles:
+            for index, article in enumerate(articles):
                 article_card(
-                    article,
-                    on_bookmark=lambda a=article: asyncio.run(
-                        bookmark_article(a)
-                    )
+                    bookmark_id=index,
+                    article=article,
+                    on_bookmark=lambda a=article: asyncio.run(bookmark_article(a))
                 )
 
         except Exception as e:

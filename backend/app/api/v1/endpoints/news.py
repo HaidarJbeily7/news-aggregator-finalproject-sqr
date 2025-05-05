@@ -52,7 +52,7 @@ async def search_news(
         )
 
     try:
-        async with NewsService(session=session) as news_service:
+        async with NewsService() as news_service:
             articles = await news_service.search_articles(params)
             return articles
     except Exception as e:
@@ -83,7 +83,7 @@ async def get_headlines(
         List[NewsArticle]: List of news articles.
     """
     try:
-        async with NewsService(session=session) as news_service:
+        async with NewsService() as news_service:
             articles = await news_service.get_top_headlines(
                 category=category,
                 country=country,

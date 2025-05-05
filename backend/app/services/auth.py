@@ -50,9 +50,7 @@ class AuthService:
 
     async def _verify_and_get_user(self, token: str) -> User:
         """Verify token and retrieve user from database."""
-        print(token, "token here")
         firebase_uid = self._verify_token(token)
-        print(firebase_uid, "firebase_uid here")
         return await self._get_user_by_firebase_uid(firebase_uid)
 
     def _verify_token(self, token: str) -> str:

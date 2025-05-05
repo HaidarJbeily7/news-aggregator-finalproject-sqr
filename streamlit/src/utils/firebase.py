@@ -194,4 +194,3 @@ def firebase_logout():
     # We just need to clear the local auth state
     clear_auth_state()
     st.success("Logged out successfully!")
-    st.rerun()

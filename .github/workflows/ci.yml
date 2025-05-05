@@ -156,7 +156,7 @@ jobs:
       - name: Run streamlit tests with coverage
         run: |
           cd streamlit
-          PYTHONPATH=. poetry run pytest --cov=src --cov-report=xml:coverage.xml tests/
+          pytest --cov=src --cov-report=xml:coverage.xml tests/
       - name: Show Streamlit Test Results
         if: always()
         run: |

@@ -112,7 +112,7 @@ async def search_news(
     headers = {"Authorization": f"Bearer {token}"}
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            f"{API_BASE_URL}/api/v1/news/search",
+            f"{API_BASE_URL}/api/v1/news/{"headlines" if category else "search"}",
             headers=headers,
             params=params
         )
