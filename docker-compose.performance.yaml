@@ -1,0 +1,20 @@
+services:
+  app:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=development
+      - DATABASE_URL=sqlite+aiosqlite:///./news_aggregator.db
+      - SECRET_KEY=testtt
+      - FIREBASE_CREDENTIALS_PATH="./news-aggregator.json"
+      - NEWS_API_KEY=testttt
+      - TESTING=True
+
+  k6:
+    image: grafana/k6
+    volumes:
+      - ./test_performance:/scripts
+    command: run /scripts/k6.js
+    depends_on:
+      - app

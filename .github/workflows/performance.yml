@@ -1,0 +1,50 @@
+name: Performance Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Run performance tests
+        run: |
+          docker-compose -f docker-compose.performance.yaml up --build -d
+          sleep 10  # Wait for the app to be ready
+          docker-compose -f docker-compose.performance.yaml run k6 > performance-results.txt
+          docker-compose -f docker-compose.performance.yaml down
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: |
+            performance-results.txt
+            test_performance/performance-report.html
+
+      - name: Comment on PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('performance-results.txt', 'utf8');
+            const issueNumber = context.issue.number;
+            const comment = `### Performance Test Results\n\`\`\`\n${results}\n\`\`\`\n\n[View detailed HTML report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+            
+            await github.rest.issues.createComment({
+              issue_number: issueNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

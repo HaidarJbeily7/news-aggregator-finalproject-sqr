@@ -3,7 +3,6 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.core.config import settings
 from app.api.v1.api import api_router
 from app.core.middleware import RateLimitMiddleware, CacheMiddleware
@@ -59,12 +58,31 @@ app = create_application()
 
 @app.get("/")
 async def root() -> dict[str, str]:
-    """Root endpoint that returns a welcome message.
+    """Root endpoint that returns a welcome message and performs
+    DB call for performance testing.
 
     Returns:
-        dict[str, str]: A welcome message.
+        dict[str, str]: A welcome message and database status.
     """
-    return {"message": "Welcome to the News Aggregator API"}
+    from app.db.session import get_session
+    from sqlalchemy import text
+    from datetime import datetime
+
+    # Perform a simple database query for performance testing
+    session = None
+    try:
+        async for db_session in get_session():
+            session = db_session
+            result = await session.execute(text("SELECT 1"))
+            db_status = "connected" if result.scalar() == 1 else "error"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
+    return {
+        "message": "Welcome to the News Aggregator API",
+        "database_status": db_status,
+        "timestamp": str(datetime.now())
+    }
 
 
 if __name__ == "__main__":
