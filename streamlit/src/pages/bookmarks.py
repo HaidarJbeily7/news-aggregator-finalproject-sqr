@@ -2,9 +2,9 @@
 import streamlit as st
 import asyncio
 
-from src.utils.auth import require_auth
-from src.utils.api import get_bookmarks, delete_bookmark
-from src.components.article_card import article_card
+from utils.auth import require_auth
+from utils.api import get_bookmarks, delete_bookmark
+from components.article_card import article_card
 
 # Set page configuration
 st.set_page_config(

@@ -168,10 +168,7 @@ def firebase_login_ui() -> Optional[Dict[str, Any]]:
                         else:
                             error_data = profile_response.json()
                             st.error(
-                                f"Failed to update profile: {
-                                    error_data.get(
-                                        'error', {}).get(
-                                        'message', 'Unknown error')}")
+                                f"Failed to update profile: { error_data.get( 'error', {}).get( 'message', 'Unknown error')}")
                     else:
                         error_data = response.json()
                         error_message = error_data.get(

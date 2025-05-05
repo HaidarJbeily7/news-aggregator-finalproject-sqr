@@ -1,7 +1,7 @@
 """Settings page for user preferences."""
 import streamlit as st
 
-from src.utils.auth import require_auth, get_current_user
+from utils.auth import require_auth, get_current_user
 
 # Set page configuration
 st.set_page_config(

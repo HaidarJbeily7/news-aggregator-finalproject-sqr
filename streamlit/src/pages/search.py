@@ -3,10 +3,10 @@ import streamlit as st
 import asyncio
 import nest_asyncio
 
-from src.utils.auth import require_auth
-from src.utils.api import search_news, create_bookmark
-from src.components.article_card import article_card
-from src.utils.config import NEWS_CATEGORIES
+from utils.auth import require_auth
+from utils.api import search_news, create_bookmark
+from components.article_card import article_card
+from utils.config import NEWS_CATEGORIES
 
 # Set page configuration
 st.set_page_config(
