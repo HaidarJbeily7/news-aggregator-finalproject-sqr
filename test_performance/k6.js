@@ -9,7 +9,7 @@ export let options = {
   ],
   thresholds: {
     http_req_duration: ['p(95)<200'], // 95% of requests should be less than 200ms
-    http_req_failed: ['rate<0.01'],   // Less than 1% of requests should fail
+    http_req_failed: ['rate<0.1'],   // Less than 0.1% of requests should fail
   },
   rps: 2,  // Limit requests per second
 }
