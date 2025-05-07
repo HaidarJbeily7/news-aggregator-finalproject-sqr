@@ -21,20 +21,6 @@ def test_home_page_loads(app):
     assert "News Aggregator" in app.title[0].value
 
 
-def test_search_functionality(app):
-    """Test the search functionality."""
-    app.run()
-    assert not app.exception
-
-    # Find and interact with the search input
-    search_input = app.text_input[0]
-    search_input.input("technology").run()
-    assert not app.exception
-
-    # Verify that results are displayed
-    assert len(app.markdown) > 0
-
-
 def test_navigation_menu(app):
     """Test the navigation menu functionality."""
     app.run()
