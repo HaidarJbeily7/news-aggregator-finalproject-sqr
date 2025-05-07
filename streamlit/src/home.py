@@ -10,6 +10,7 @@ from utils.auth import (
     init_auth_state,
     is_authenticated,
     fetch_user_info,
+    clear_auth_state,
 )
 from utils.api import get_headlines
 from components.article_card import article_card
@@ -109,6 +110,7 @@ def main():
                     st.success("Logged in successfully!")
                     st.rerun()
                 except AuthenticationError as e:
+                    clear_auth_state()
                     st.error(f"Login failed: {str(e)}")
                     st.info(
                         "Please try again or contact support "

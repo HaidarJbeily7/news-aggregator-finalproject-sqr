@@ -52,15 +52,11 @@ async def search_and_display():
     query = st.session_state.get("search_query", "")
     category = st.session_state.get("search_category")
 
-    if not query and category in (None, "all"):
-        msg = "Enter a search query or select a category to search for news."
-        st.info(msg)
-        return
 
     with st.spinner("Searching for news..."):
         try:
             articles = await search_news(
-                query=query if query else None,
+                query=query if query else "General",
                 category=category if category != "all" else None,
                 page_size=20
             )
@@ -112,9 +108,13 @@ def main():
             )
 
         submitted = st.form_submit_button("Search")
-
+    
+    asyncio.run(search_and_display())
+    # Run search_and_display on first page load and when search is submitted
     if (submitted or st.session_state.get("search_query") or
-            st.session_state.get("search_category") != "all"):
+            st.session_state.get("search_category") != "all"
+        ):
+        
         asyncio.run(search_and_display())
 
     # Clear bookmark success message after displaying
